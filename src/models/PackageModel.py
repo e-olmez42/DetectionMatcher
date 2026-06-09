@@ -1,102 +1,65 @@
-
+"""
+    Matches child detections (e.g., helmets) with parent detections (e.g., persons) 
+    from two separate detection lists and outputs the updated parent list.
+"""
 from pydantic import Field, validator
 from typing import List, Optional, Union, Literal
-from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
+from sdks.novavision.src.base.model import Package, Detection, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
 
-
-class InputImage(Input):
-    name: Literal["inputImage"] = "inputImage"
-    value: Union[List[Image], Image]
-    type: str = "object"
-
-    @validator("type", pre=True, always=True)
-    def set_type_based_on_value(cls, value, values):
-        value = values.get('value')
-        if isinstance(value, Image):
-            return "object"
-        elif isinstance(value, list):
-            return "list"
+class InputDetections(Input):
+    name: Literal["inputDetections"] = "inputDetections"
+    value: List[Detection]
+    type: Literal["list"] = "list"
 
     class Config:
-        title = "Image"
+        title = "Detections"
 
-
-class OutputImage(Output):
-    name: Literal["outputImage"] = "outputImage"
-    value: Union[List[Image],Image]
-    type: str = "object"
-
-    @validator("type", pre=True, always=True)
-    def set_type_based_on_value(cls, value, values):
-        value = values.get('value')
-        if isinstance(value, Image):
-            return "object"
-        elif isinstance(value, list):
-            return "list"
+class OutputDetections(Output):
+    name: Literal["outputDetections"] = "outputDetections"
+    value: List[Detection]
+    type: Literal["list"] = "list"
 
     class Config:
-        title = "Image"
+        title = "Detections"
 
-
-class KeepSideFalse(Config):
-    name: Literal["False"] = "False"
-    value: Literal[False] = False
-    type: Literal["bool"] = "bool"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Disable"
-
-
-class KeepSideTrue(Config):
-    name: Literal["True"] = "True"
-    value: Literal[True] = True
-    type: Literal["bool"] = "bool"
-    field: Literal["option"] = "option"
-
-    class Config:
-        title = "Enable"
-
-
-class KeepSideBBox(Config):
+class TargetAttribute(Config):
     """
-        Rotate image without catting off sides.
+        The boolean attribute name to be injected into the parent detection. Example: "hasHelmet"
     """
-    name: Literal["KeepSide"] = "KeepSide"
-    value: Union[KeepSideTrue, KeepSideFalse]
-    type: Literal["object"] = "object"
-    field: Literal["dropdownlist"] = "dropdownlist"
+    name: Literal["AttributeName"] = "AttributeName"
+    value: str = Field(default="hasChild")
+    type: Literal["string"] = "string"
+    field: Literal["textInput"] = "textInput"
+    placeHolder: Literal["e.g., hasHelmet"] = "e.g., hasHelmet"
 
     class Config:
-        title = "Keep Sides"
+        title = "Target Attribute"
 
-
-class Degree(Config):
+class Threshold(Config):
     """
-        Positive angles specify counterclockwise rotation while negative angles indicate clockwise rotation.
+        Overlap threshold (Intersection over Child Area). Value between 0.0 and 1.0.
     """
-    name: Literal["Degree"] = "Degree"
-    value: int = Field(ge=-359.0, le=359.0,default=0)
+    name: Literal["Threshold"] = "Threshold"
+    value: float = Field(ge=0.0, le=1.0, default=0.5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["[-359, 359]"] = "[-359, 359]"
+    placeHolder: Literal["[0.0, 1.0]"] = "[0.0, 1.0]"
 
     class Config:
-        title = "Angle"
-
+        title = "Overlap Threshold"
 
 class PackageInputs(Inputs):
-    inputImage: InputImage
-
+    # İki ayrı kaynaktan gelen detection listeleri
+    parentDetections: InputDetections
+    childDetections: InputDetections
 
 class PackageConfigs(Configs):
-    degree: Degree
-    drawBBox: KeepSideBBox
-
+    targetAttribute: TargetAttribute
+    threshold: Threshold
 
 class PackageOutputs(Outputs):
-    outputImage: OutputImage
-
+    # Güncellenmiş ana detection listesini döneceğiz
+    outputDetections: OutputDetections
 
 class PackageRequest(Request):
     inputs: Optional[PackageInputs]
@@ -107,25 +70,22 @@ class PackageRequest(Request):
             "target": "configs"
         }
 
-
 class PackageResponse(Response):
     outputs: PackageOutputs
 
-
 class PackageExecutor(Config):
-    name: Literal["Package"] = "Package"
+    name: Literal["DetectionMatcher"] = "DetectionMatcher"
     value: Union[PackageRequest, PackageResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
     class Config:
-        title = "Package"
+        title = "DetectionMatcher"
         json_schema_extra = {
             "target": {
                 "value": 0
             }
         }
-
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
@@ -139,12 +99,10 @@ class ConfigExecutor(Config):
             "target": "value"
         }
 
-
 class PackageConfigs(Configs):
     executor: ConfigExecutor
 
-
-class PackageModel(Package):
+class DetectionMatcherModel(Package):
     configs: PackageConfigs
     type: Literal["component"] = "component"
-    name: Literal["Package"] = "Package"
+    name: Literal["DetectionMatcher"] = "DetectionMatcher"
