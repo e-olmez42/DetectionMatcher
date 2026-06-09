@@ -1,15 +1,25 @@
-
 from sdks.novavision.src.helper.package import PackageHelper
-from components.Package.src.models.PackageModel import PackageModel, PackageConfigs, ConfigExecutor, PackageOutputs, PackageResponse, PackageExecutor, OutputImage
-
+from components.DetectionMatcher.src.models.DetectionMatcherModel import (
+    DetectionMatcher, 
+    PackageConfigs, 
+    ConfigExecutor, 
+    DetectionMatcherOutputs, 
+    DetectionMatcherResponse, 
+    DetectionMatcherExecutor, 
+    OutputDetections
+)
 
 def build_response(context):
-    outputImage = OutputImage(value=context.image)
-    Outputs = PackageOutputs(outputImage=outputImage)
-    packageResponse = PackageResponse(outputs=Outputs)
-    packageExecutor = PackageExecutor(value=packageResponse)
+    output_detections_obj = OutputDetections(value=context.outputDetections)
+    
+    outputs = DetectionMatcherOutputs(outputDetections=output_detections_obj)
+    packageResponse = DetectionMatcherResponse(outputs=outputs)
+    packageExecutor = DetectionMatcherExecutor(value=packageResponse)
+    
     executor = ConfigExecutor(value=packageExecutor)
     packageConfigs = PackageConfigs(executor=executor)
-    package = PackageHelper(packageModel=PackageModel, packageConfigs=packageConfigs)
+    
+    package = PackageHelper(packageModel=DetectionMatcher, packageConfigs=packageConfigs)
     packageModel = package.build_model(context)
+    
     return packageModel
