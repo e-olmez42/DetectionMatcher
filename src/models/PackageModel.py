@@ -12,7 +12,7 @@ class InputDetectionsOne(Input):
     type: Literal["list"] = "list"
 
     class Config:
-        title = "Detections"
+        title = "targetDetections"
 
 class InputDetectionsTwo(Input):
     name: Literal["inputDetectionsTwo"] = "inputDetectionsTwo"
@@ -20,7 +20,7 @@ class InputDetectionsTwo(Input):
     type: Literal["list"] = "list"
 
     class Config:
-        title = "Detections"
+        title = "referenceDetections"
 
 class OutputDetections(Output):
     name: Literal["outputDetections"] = "outputDetections"
