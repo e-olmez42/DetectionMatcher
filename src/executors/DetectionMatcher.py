@@ -10,20 +10,18 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../'))
 from sdks.novavision.src.base.component import Component
 from sdks.novavision.src.helper.executor import Executor
 from components.DetectionMatcher.src.utils.response import build_response
-from components.DetectionMatcher.src.models.DetectionMatcherModel import DetectionMatcherModel
+from components.DetectionMatcher.src.models.PackageModel import PackageModel
 
 class DetectionMatcher(Component):
     def __init__(self, request, bootstrap):
         super().__init__(request, bootstrap)
-        self.request.model = DetectionMatcherModel(**(self.request.data))
+        self.request.model = PackageModel(**(self.request.data))
         
-        # Konfigürasyonları Çekiyoruz
-        self.threshold = self.request.get_param("Threshold")
-        self.target_attribute = self.request.get_param("AttributeName")
+        self.threshold = self.request.get_param("threshold")
+        self.target_attribute = self.request.get_param("targetAttribute")
         
-        # Girdi listelerini çekiyoruz (Artık Image bağımsız)
-        self.parent_detections = self.request.get_param("parentDetections")
-        self.child_detections = self.request.get_param("childDetections")
+        self.parent_detections = self.request.get_param("inputDetectionsOne")
+        self.child_detections = self.request.get_param("inputDetectionsTwo")
 
     @staticmethod
     def bootstrap(config: dict) -> dict:
