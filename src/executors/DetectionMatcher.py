@@ -29,7 +29,7 @@ class DetectionMatcher(Component):
         children = self.child_detections if self.child_detections else []
 
         for parent in parents:
-            parent[self.target_attribute] = False
+            parent[self.target_attribute] = "False"
 
             px1 = parent["boundingBox"]["left"]
             py1 = parent["boundingBox"]["top"]
@@ -57,7 +57,7 @@ class DetectionMatcher(Component):
                     overlap_ratio = intersection_area / child_area
 
                     if overlap_ratio >= self.threshold:
-                        parent[self.target_attribute] = True
+                        parent[self.target_attribute] = "True"
                         break
 
         return parents
