@@ -100,7 +100,7 @@ class ConfigExecutor(Config):
 class PackageConfigs(Configs):
     executor: ConfigExecutor
 
-class DetectionMatcher(Package):
+class PackageModel(Package):
     configs: PackageConfigs
     type: Literal["component"] = "component"
     name: Literal["DetectionMatcher"] = "DetectionMatcher"
