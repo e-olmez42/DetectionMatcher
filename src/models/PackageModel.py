@@ -48,34 +48,32 @@ class Threshold(Config):
     class Config:
         title = "Overlap Threshold"
 
-class PackageInputs(Inputs):
-    # İki ayrı kaynaktan gelen detection listeleri
+class DetectionMatcherInputs(Inputs):
     parentDetections: InputDetections
     childDetections: InputDetections
 
-class PackageConfigs(Configs):
+class DetectionMatcherConfigs(Configs):
     targetAttribute: TargetAttribute
     threshold: Threshold
 
-class PackageOutputs(Outputs):
-    # Güncellenmiş ana detection listesini döneceğiz
+class DetectionMatcherOutputs(Outputs):
     outputDetections: OutputDetections
 
-class PackageRequest(Request):
-    inputs: Optional[PackageInputs]
-    configs: PackageConfigs
+class DetectionMatcherRequest(Request):
+    inputs: Optional[DetectionMatcherInputs]
+    configs: DetectionMatcherConfigs
 
     class Config:
         json_schema_extra = {
             "target": "configs"
         }
 
-class PackageResponse(Response):
-    outputs: PackageOutputs
+class DetectionMatcherResponse(Response):
+    outputs: DetectionMatcherOutputs
 
-class PackageExecutor(Config):
+class DetectionMatcherExecutor(Config):
     name: Literal["DetectionMatcher"] = "DetectionMatcher"
-    value: Union[PackageRequest, PackageResponse]
+    value: Union[DetectionMatcherRequest,DetectionMatcherResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
@@ -89,7 +87,7 @@ class PackageExecutor(Config):
 
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PackageExecutor]
+    value: Union[DetectionMatcherExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
@@ -102,7 +100,7 @@ class ConfigExecutor(Config):
 class PackageConfigs(Configs):
     executor: ConfigExecutor
 
-class DetectionMatcherModel(Package):
+class DetectionMatcher(Package):
     configs: PackageConfigs
     type: Literal["component"] = "component"
     name: Literal["DetectionMatcher"] = "DetectionMatcher"
