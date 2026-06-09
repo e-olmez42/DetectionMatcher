@@ -6,8 +6,16 @@ from pydantic import Field, validator
 from typing import List, Optional, Union, Literal
 from sdks.novavision.src.base.model import Package, Detection, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
 
-class InputDetections(Input):
-    name: Literal["inputDetections"] = "inputDetections"
+class InputDetectionsOne(Input):
+    name: Literal["inputDetectionsOne"] = "inputDetectionsOne"
+    value: List[Detection]
+    type: Literal["list"] = "list"
+
+    class Config:
+        title = "Detections"
+
+class InputDetectionsTwo(Input):
+    name: Literal["inputDetectionsTwo"] = "inputDetectionsTwo"
     value: List[Detection]
     type: Literal["list"] = "list"
 
@@ -49,8 +57,8 @@ class Threshold(Config):
         title = "Overlap Threshold"
 
 class DetectionMatcherInputs(Inputs):
-    parentDetections: InputDetections
-    childDetections: InputDetections
+    inputDetectionsOne: InputDetectionsOne
+    inputDetectionsTwo: InputDetectionsTwo
 
 class DetectionMatcherConfigs(Configs):
     targetAttribute: TargetAttribute
