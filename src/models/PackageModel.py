@@ -34,11 +34,10 @@ class TargetAttribute(Config):
     """
         The boolean attribute name to be injected into the parent detection. Example: "hasHelmet"
     """
-    name: Literal["AttributeName"] = "AttributeName"
+    name: Literal["targetAttribute"] = "targetAttribute"
     value: str = Field(default="hasChild")
     type: Literal["string"] = "string"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["e.g., hasHelmet"] = "e.g., hasHelmet"
 
     class Config:
         title = "Target Attribute"
@@ -51,7 +50,6 @@ class Threshold(Config):
     value: float = Field(ge=0.0, le=1.0, default=0.5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["[0.0, 1.0]"] = "[0.0, 1.0]"
 
     class Config:
         title = "Overlap Threshold"
