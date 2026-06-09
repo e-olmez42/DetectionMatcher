@@ -46,7 +46,7 @@ class Threshold(Config):
     """
         Overlap threshold (Intersection over Child Area). Value between 0.0 and 1.0.
     """
-    name: Literal["Threshold"] = "Threshold"
+    name: Literal["threshold"] = "threshold"
     value: float = Field(ge=0.0, le=1.0, default=0.5)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
